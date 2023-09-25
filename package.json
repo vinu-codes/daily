@@ -1,0 +1,31 @@
+{
+  "name": "daily",
+  "version": "1.0.0",
+  "description": "daily work application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel ./public/index.html",
+    "build": "parcel build ./src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinu-codes/daily.git"
+  },
+  "keywords": [
+    "daily"
+  ],
+  "author": "vinu karunasinghe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinu-codes/daily/issues"
+  },
+  "homepage": "https://github.com/vinu-codes/daily#readme",
+  
+  "devDependencies": {
+    "parcel": "^2.0.0"
+  },
+  "dependencies": {
+    "prettier": "2.8.7"
+  }
+}

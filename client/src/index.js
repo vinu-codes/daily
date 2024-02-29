@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { createRoot } from 'react-dom/client'
+import { Commands } from './Commands'
 
 import './styles.css'
 
@@ -29,8 +30,7 @@ const FakeComponent = () => {
 const root = createRoot(document.getElementById('root'))
 root.render(
   <div>
-    <h1>Hello, world!</h1>
-    <h2>Start editing to see some magic happen!</h2>
-    <FakeComponent />
+    {/* <FakeComponent /> */}
+    <Commands />
   </div>
 )

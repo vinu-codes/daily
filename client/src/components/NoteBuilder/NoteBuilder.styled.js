@@ -9,6 +9,30 @@ const Container = styled.div`
   padding: 20px;
   margin: 20px;
   border-radius: 8px;
+  h2 {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 12px;
+  }
+`
+
+const Group = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid grey;
+  padding: 16px;
+  border-radius: 8px;
+  h3 {
+    padding: 0;
+    margin: 0;
+  }
+`
+
+const ParentDeleteButton = styled.button`
+  border: none;
+  background: none;
+  cursor: pointer;
 `
 
 const List = styled.li`
@@ -19,19 +43,35 @@ const List = styled.li`
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
-  width: 90%;
+  align-items: center;
+  textarea {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+  }
   &:not(:only-child) {
     margin-bottom: 16px;
   }
   span {
     color: grey;
+    line-height: 21px;
+  }
+  span.label {
+    font-weight: bold;
+    padding-right: 8px;
   }
 `
 
 const Controls = styled.div`
   display: flex;
+  align-items: center;
   margin-left: auto;
   gap: 8px;
+  button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
   svg.CHEVRON {
     transform: rotate(180deg);
     path {
@@ -40,4 +80,11 @@ const Controls = styled.div`
   }
 `
 
-export { Container, List, Controls }
+const Heading = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+`
+
+export { Container, List, Controls, Group, ParentDeleteButton, Heading }

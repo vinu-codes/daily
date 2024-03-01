@@ -15,6 +15,7 @@ const saveResourceData = (data) => {
 // create function that will retrieve the resource data (fitness.json)
 const getResourceData = () => {
   const result = fs.readFileSync(dataPath);
+  // change the result to a Javascript object
   return JSON.parse(result);
 };
 
@@ -37,6 +38,25 @@ fitnessRoutes.delete(`${basePath}/delete/:id`, (req, response) => {
 
       await saveResourceData(currentResource);
       response.send({
+        status: 'SUCCESS',
+        payload: !!currentResource ? currentResource : {},
+      });
+    },
+    true
+  );
+});
+
+// Update - using PUT method
+fitnessRoutes.put(`${basePath}/update/:id`, (req, res) => {
+  var currentResource = getResourceData();
+  fs.readFile(
+    dataPath,
+    'utf8',
+    async (err, data) => {
+      const id = req.params['id'];
+      currentResource[id] = req.body;
+      await saveResourceData(currentResource);
+      res.send({
         status: 'SUCCESS',
         payload: !!currentResource ? currentResource : {},
       });

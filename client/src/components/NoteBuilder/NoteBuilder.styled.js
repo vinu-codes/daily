@@ -20,7 +20,7 @@ const List = styled.li`
   display: flex;
   justify-content: space-between;
   width: 90%;
-  &:not(:first-child) {
+  &:not(:only-child) {
     margin-bottom: 16px;
   }
   span {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { createRoot } from 'react-dom/client'
-import { Commands } from './Commands'
+import { NoteBuilder } from '@components/NoteBuilder'
 
 import './styles.css'
 
@@ -31,6 +31,6 @@ const root = createRoot(document.getElementById('root'))
 root.render(
   <div>
     {/* <FakeComponent /> */}
-    <Commands />
+    <NoteBuilder />
   </div>
 )

@@ -31,6 +31,6 @@ const root = createRoot(document.getElementById('root'))
 root.render(
   <div>
     {/* <FakeComponent /> */}
-    <NoteBuilder />
+    <NoteBuilder label={'Git Commands'} />
   </div>
 )

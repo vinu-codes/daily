@@ -18,7 +18,7 @@ const Renderer = ({ items }) => {
   })
 }
 
-const NoteBuilder = () => {
+const NoteBuilder = ({ label }) => {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
 
@@ -37,6 +37,7 @@ const NoteBuilder = () => {
 
   return (
     <Container>
+      {label && <h2>{label}</h2>}
       <Renderer items={!!data ? Object.values(data) : ''} />
     </Container>
   )

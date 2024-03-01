@@ -9,9 +9,8 @@ Welcome to My Daily App repository! This project is built using React, Styled Co
   - Streamline daily tasks by organizing and accessing notes easily.
   - Save notes for various tasks and command snippets.
 
-## Technologies Used
+## 🛠️ Technologies
 
-- **React:** JavaScript library for building user interfaces.
-- **Styled Components:** CSS-in-JS library for styling React components.
-- **Node.js:** JavaScript runtime for server-side development.
-
+- `React.js`
+- `Node.js`
+- `styled-components`

@@ -1,3 +1,26 @@
 {
-  "1": {}
+  "01": {
+    "label": "git branch <branch-name>",
+    "description": "This command will create a branch locally.",
+    "children": [
+      {
+        "id": "abc-2",
+        "label": "Username",
+        "value": "abc@gmail.com",
+        "description": "This is the description of this item"
+      }
+    ]
+  },
+  "02": {
+    "label": "git push -u <remote> <branch-name>",
+    "description": "This command will create a branch locally. To push the new branch into the remote repository.",
+    "children": [
+      {
+        "id": "abc-2",
+        "label": "Username",
+        "value": "abc@gmail.com",
+        "description": "This is the description of this item"
+      }
+    ]
+  }
 }

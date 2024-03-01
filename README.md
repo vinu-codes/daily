@@ -1,14 +1,13 @@
 # My Daily App
 
-Welcome to My Daily App repository! This project is built using React, Styled Components, and Node.js. 
-It's designed to help improve daily task management, with a special focus on a Notebuilder feature tailored for fetching data from a server and saving notes. 
-This is particularly useful for storing Git commands or any other tasks you frequently perform.
+Welcome to My Daily App repository! This project is built using React, Styled Components, and Node.js. It's designed to help improve daily task management, with a special focus on a Notebuilder feature tailored for accessing Git commands used on a daily basis.
 
 ## Features
 
 - **Notebuilder:** 
-  - Fetch data from the server.
-  - Save notes for various tasks, including frequently used Git commands.
+  - Access frequently used Git commands effortlessly.
+  - Streamline daily tasks by organizing and accessing notes easily.
+  - Save notes for various tasks and command snippets.
 
 ## Technologies Used
 

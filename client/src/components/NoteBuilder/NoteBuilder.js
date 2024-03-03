@@ -6,12 +6,27 @@ import {
   Controls,
   Group,
   ParentDeleteButton,
-  Heading,
+  ParentAddButton,
+  Header,
+  ContainerHeader,
+  MainContainer,
 } from './NoteBuilder.styled'
+import { CategoryBuilderForm } from './CategoryBuilderForm'
+import { ItemBuilderForm } from './ItemBuilderForm'
 import axios from 'axios'
 
 const RendererItems = ({ items, callback, parentId }) => {
+  const [selectedIndex, setSelectedIndex] = useState(null)
   const textAreaRefs = useRef([])
+
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      const timer = setTimeout(() => {
+        setSelectedIndex(null)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [selectedIndex])
 
   textAreaRefs.current =
     !!items &&
@@ -29,17 +44,21 @@ const RendererItems = ({ items, callback, parentId }) => {
       textAreaRefs.current[index].current.select()
       document.execCommand('copy')
     }
+    setSelectedIndex(index)
   }
 
   return items.map((item, index) => {
     return (
-      <List key={index}>
+      <List
+        key={index}
+        className={selectedIndex === index ? 'list active' : 'list'}
+      >
         <span className="label">{item.label}:</span>
         <span className="value">{item.value}</span>
         <textarea value={item.value} ref={textAreaRefs.current[index]} />
         <Controls>
           <button className="copy" onClick={() => handleCopy(index)}>
-            <Icon name="COPY" />
+            <Icon name={selectedIndex === index ? 'TICK' : 'COPY'} />
           </button>
           <button
             className="delete"
@@ -64,14 +83,19 @@ const RendererParent = ({ items, callback }) => {
   return items.map((item, index) => {
     return (
       <Group key={index}>
-        <Heading>
+        <Header>
           <h3>{item.label}</h3>
-          <ParentDeleteButton
-            onClick={() => callback({ action: 'delete', value: item.id })}
-          >
-            <Icon name="TRASH" />
-          </ParentDeleteButton>
-        </Heading>
+          <div>
+            <ParentAddButton onClick={() => callback({ action: 'OPEN_ITEM' })}>
+              <Icon name="CLOSE" />
+            </ParentAddButton>
+            <ParentDeleteButton
+              onClick={() => callback({ action: 'delete', value: item.id })}
+            >
+              <Icon name="TRASH" />
+            </ParentDeleteButton>
+          </div>
+        </Header>
         <RendererItems
           items={item.children}
           callback={callback}
@@ -85,6 +109,8 @@ const RendererParent = ({ items, callback }) => {
 const NoteBuilder = ({ label }) => {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
+  const [activeMenuId, setActiveMenuId] = useState('')
+  const [enableMenu, setEnableMenu] = useState(false)
 
   console.log({ data })
   useEffect(() => {
@@ -114,22 +140,7 @@ const NoteBuilder = ({ label }) => {
       const result = data[value.parentId].children.filter((item) => {
         return item.id !== value.childId
       })
-      // "01": {
-      //   "id": "01",
-      //   "label": "Git Basics",
-      //   "children": [
-      //     {
-      //       "id": "abc-2",
-      //       "label": "Add a new branch",
-      //       "value": "git branch <branch-name>"
-      //     },
-      //     {
-      //       "id": "abc-3",
-      //       "label": "Delete a branch",
-      //       "value": "git branch -d <branch-name>"
-      //     }
-      //   ]
-      // }
+
       console.log({ result })
       const payload = { id: '01', label: 'Philip', children: result }
       try {
@@ -143,16 +154,49 @@ const NoteBuilder = ({ label }) => {
         setError(error)
       }
     }
+    if (action === 'ADD_CATEGORY') {
+      const body = { label: value, children: [] }
+      try {
+        const response = await axios.post(`/fitness/create`, body)
+        setData(response.data.payload)
+      } catch (error) {
+        setError(error)
+      }
+    }
+    if (action === 'OPEN_CATEGORY') {
+      setEnableMenu(true)
+      setActiveMenuId('CATEGORY')
+    }
+    if (action === 'OPEN_ITEM') {
+      setEnableMenu(true)
+      setActiveMenuId('ITEM')
+    }
   }
 
   return (
-    <Container>
-      <h2>Notes</h2>
-      <RendererParent
-        items={!!data ? Object.values(data) : []}
-        callback={handleCallback}
-      />
-    </Container>
+    <MainContainer>
+      <Container>
+        <ContainerHeader>
+          <h2>Notes</h2>
+          <button
+            className="open-category"
+            onClick={() => handleCallback({ action: 'OPEN_CATEGORY' })}
+          >
+            <Icon name="CLOSE" />
+          </button>
+        </ContainerHeader>
+        <RendererParent
+          items={!!data ? Object.values(data) : []}
+          callback={handleCallback}
+        />
+      </Container>
+      {enableMenu && activeMenuId === 'ITEM' && (
+        <ItemBuilderForm callback={handleCallback} />
+      )}
+      {enableMenu && activeMenuId === 'CATEGORY' && (
+        <CategoryBuilderForm callback={handleCallback} />
+      )}
+    </MainContainer>
   )
 }
 

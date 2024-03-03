@@ -28,9 +28,4 @@ const FakeComponent = () => {
 }
 
 const root = createRoot(document.getElementById('root'))
-root.render(
-  <div>
-    {/* <FakeComponent /> */}
-    <NoteBuilder label={'Git Commands'} />
-  </div>
-)
+root.render(<NoteBuilder label={'Git Commands'} />)

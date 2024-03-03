@@ -65,4 +65,21 @@ fitnessRoutes.put(`${basePath}/update/:id`, (req, res) => {
   );
 });
 
+fitnessRoutes.post(`${basePath}/create`, (req, res) => {
+  var currentResource = getResourceData();
+  const data = req.body;
+  const newResourceId = !!data.id
+    ? data.id
+    : Math.floor(100000 + Math.random() * 900000);
+
+  const currentDate = new Date();
+  const timestamp = currentDate.getTime();
+
+  const newResource = { ...data, id: newResourceId, timestamp };
+  currentResource[newResourceId] = newResource;
+
+  saveResourceData(currentResource);
+  res.send({ status: 'SUCCESS', payload: currentResource });
+});
+
 module.exports = fitnessRoutes;

@@ -8,6 +8,8 @@ const MainContainer = styled.div`
   margin: 20px;
   border-radius: 8px;
   width: calc(100% - 40px);
+  position: relative;
+  top: 72px;
 `
 
 const Container = styled.div`
@@ -50,6 +52,9 @@ const Group = styled.ul`
   h3 {
     padding: 0;
     margin: 0;
+  }
+  &.active {
+    border: 2px solid orange;
   }
 `
 

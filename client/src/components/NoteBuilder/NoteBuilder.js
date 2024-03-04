@@ -14,6 +14,7 @@ import {
 import { CategoryBuilderForm } from './CategoryBuilderForm'
 import { ItemBuilderForm } from './ItemBuilderForm'
 import axios from 'axios'
+import { uuid } from '@utils/uuid'
 
 const RendererItems = ({ items, callback, parentId }) => {
   const [selectedIndex, setSelectedIndex] = useState(null)
@@ -77,16 +78,21 @@ const RendererItems = ({ items, callback, parentId }) => {
   })
 }
 
-const RendererParent = ({ items, callback }) => {
+const RendererParent = ({ items, callback, parentId }) => {
   if (!items || items.length === 0) return null
 
   return items.map((item, index) => {
     return (
-      <Group key={index}>
+      <Group
+        key={index}
+        className={parentId === item.id ? 'group active' : 'group'}
+      >
         <Header>
           <h3>{item.label}</h3>
           <div>
-            <ParentAddButton onClick={() => callback({ action: 'OPEN_ITEM' })}>
+            <ParentAddButton
+              onClick={() => callback({ action: 'OPEN_ITEM', value: item.id })}
+            >
               <Icon name="CLOSE" />
             </ParentAddButton>
             <ParentDeleteButton
@@ -111,8 +117,8 @@ const NoteBuilder = ({ label }) => {
   const [error, setError] = useState(null)
   const [activeMenuId, setActiveMenuId] = useState('')
   const [enableMenu, setEnableMenu] = useState(false)
+  const [parentId, setParentId] = useState('')
 
-  console.log({ data })
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -142,7 +148,11 @@ const NoteBuilder = ({ label }) => {
       })
 
       console.log({ result })
-      const payload = { id: '01', label: 'Philip', children: result }
+      const payload = {
+        id: parentId,
+        label: data[value.parentId].label,
+        children: result,
+      }
       try {
         const response = await axios.put(
           `/fitness/update/${value.parentId}`,
@@ -163,6 +173,32 @@ const NoteBuilder = ({ label }) => {
         setError(error)
       }
     }
+    if (action === 'ADD_ITEM') {
+      console.log(value.activeId)
+      const id = value.activeId
+      const prevChildren = data[value.activeId].children
+      const label = data[value.activeId].label
+      const item = {
+        label: value.labelInput,
+        value: value.valueInput,
+        id: uuid(),
+      }
+      const children = [...prevChildren, item]
+
+      const body = {
+        id,
+        label,
+        children,
+      }
+
+      try {
+        const response = await axios.put(`/fitness/update/${parentId}`, body)
+        console.log(response.data, 'update response')
+        setData(response.data.payload)
+      } catch (error) {
+        setError(error)
+      }
+    }
     if (action === 'OPEN_CATEGORY') {
       setEnableMenu(true)
       setActiveMenuId('CATEGORY')
@@ -170,6 +206,12 @@ const NoteBuilder = ({ label }) => {
     if (action === 'OPEN_ITEM') {
       setEnableMenu(true)
       setActiveMenuId('ITEM')
+      setParentId(value)
+      console.log({ parentId })
+    }
+    if (action === 'CLOSE') {
+      setEnableMenu(false)
+      setParentId(null)
     }
   }
 
@@ -188,10 +230,11 @@ const NoteBuilder = ({ label }) => {
         <RendererParent
           items={!!data ? Object.values(data) : []}
           callback={handleCallback}
+          parentId={parentId}
         />
       </Container>
       {enableMenu && activeMenuId === 'ITEM' && (
-        <ItemBuilderForm callback={handleCallback} />
+        <ItemBuilderForm callback={handleCallback} activeId={parentId} />
       )}
       {enableMenu && activeMenuId === 'CATEGORY' && (
         <CategoryBuilderForm callback={handleCallback} />

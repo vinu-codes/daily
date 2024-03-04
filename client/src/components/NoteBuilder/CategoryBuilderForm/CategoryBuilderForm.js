@@ -1,3 +1,4 @@
+import { Icon } from '@common/Icon'
 import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 
@@ -9,6 +10,15 @@ const Container = styled.div`
   padding: 16px;
   h3 {
     margin: 0;
+  }
+`
+const HeaderContainer = styled.div`
+  display: flex;
+  button.close {
+    background: none;
+    border: none;
+    margin-left: auto;
+    cursor: pointer;
   }
 `
 
@@ -51,9 +61,19 @@ const CategoryBuilderForm = ({ callback = () => {} }) => {
     const { value } = e.target
     setValue(value)
   }
+
+  const handleClose = () => {
+    callback({ action: 'CLOSE' })
+  }
+
   return (
     <Container>
-      <h3>Add Category</h3>
+      <HeaderContainer>
+        <h3>Add Category</h3>
+        <button className="close" onClick={handleClose}>
+          <Icon name="CLOSE" />
+        </button>
+      </HeaderContainer>
       <Form onSubmit={onSubmit}>
         <input
           type="text"

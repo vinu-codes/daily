@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { createRoot } from 'react-dom/client'
 import { NoteBuilder } from '@components/NoteBuilder'
+import { NavBar } from '@components/NavBar'
 
 import './styles.css'
 
@@ -28,4 +29,9 @@ const FakeComponent = () => {
 }
 
 const root = createRoot(document.getElementById('root'))
-root.render(<NoteBuilder label={'Git Commands'} />)
+root.render(
+  <>
+    <NavBar />
+    <NoteBuilder label={'Git Commands'} />
+  </>
+)

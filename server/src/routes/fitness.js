@@ -54,6 +54,7 @@ fitnessRoutes.put(`${basePath}/update/:id`, (req, res) => {
     'utf8',
     async (err, data) => {
       const id = req.params['id'];
+      // currentResource is an object, and we are accessing the object using the id and seting req.body to the id
       currentResource[id] = req.body;
       await saveResourceData(currentResource);
       res.send({

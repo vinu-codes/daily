@@ -35,8 +35,6 @@ const RendererItems = ({ items, callback, parentId }) => {
       textAreaRefs.current[index] ? textAreaRefs.current[index] : createRef()
     )
 
-  console.log({ textAreaRefs })
-
   if (!items || items.length === 0) return null
 
   const handleCopy = (index) => {
@@ -82,6 +80,7 @@ const RendererParent = ({ items, callback, parentId }) => {
   if (!items || items.length === 0) return null
 
   return items.map((item, index) => {
+    console.log(item)
     return (
       <Group
         key={index}
@@ -96,7 +95,7 @@ const RendererParent = ({ items, callback, parentId }) => {
               <Icon name="CLOSE" />
             </ParentAddButton>
             <ParentDeleteButton
-              onClick={() => callback({ action: 'delete', value: item.id })}
+              onClick={() => callback({ action: 'DELETE', value: item.id })}
             >
               <Icon name="TRASH" />
             </ParentDeleteButton>
@@ -133,10 +132,10 @@ const NoteBuilder = ({ label }) => {
   }, [])
 
   const handleCallback = async ({ action, value }) => {
-    if (action === 'delete') {
+    if (action === 'DELETE') {
+      console.log({ delete: value })
       try {
         const response = await axios.delete(`/fitness/delete/${value}`)
-        console.log(response.data, 'delete response')
         setData(response.data.payload)
       } catch (error) {
         setError(error)
@@ -158,7 +157,6 @@ const NoteBuilder = ({ label }) => {
           `/fitness/update/${value.parentId}`,
           payload
         )
-        console.log(response.data, 'update response')
         setData(response.data.payload)
       } catch (error) {
         setError(error)
@@ -182,6 +180,7 @@ const NoteBuilder = ({ label }) => {
         label: value.labelInput,
         value: value.valueInput,
         id: uuid(),
+        timestamp: new Date().toISOString(),
       }
       const children = [...prevChildren, item]
 

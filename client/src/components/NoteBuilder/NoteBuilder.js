@@ -164,6 +164,43 @@ const NoteBuilder = ({ label }) => {
     }
   }
 
+  const addCategory = async ({ payload }) => {
+    const body = { label: payload, children: [] }
+    try {
+      const response = await axios.post(`/fitness/create`, body)
+      setData(response.data.payload)
+    } catch (error) {
+      setError(error)
+    }
+  }
+
+  const addItem = async ({ payload }) => {
+    console.log({ payload })
+    const id = payload.activeId
+    const prevChildren = data[payload.activeId].children
+    const label = data[payload.activeId].label
+    const item = {
+      label: payload.labelInput,
+      value: payload.valueInput,
+      id: uuid(),
+      timestamp: new Date().toISOString(),
+    }
+    const children = [...prevChildren, item]
+
+    const body = {
+      id,
+      label,
+      children,
+    }
+
+    try {
+      const response = await axios.put(`/fitness/update/${parentId}`, body)
+      setData(response.data.payload)
+    } catch (error) {
+      setError(error)
+    }
+  }
+
   const handleCallback = async ({ action, value }) => {
     if (action === 'DELETE_CATEGORY') {
       deleteCategory({ payload: value })
@@ -174,39 +211,18 @@ const NoteBuilder = ({ label }) => {
       })
     }
     if (action === 'ADD_CATEGORY') {
-      const body = { label: value, children: [] }
-      try {
-        const response = await axios.post(`/fitness/create`, body)
-        setData(response.data.payload)
-      } catch (error) {
-        setError(error)
-      }
+      addCategory({ payload: value })
     }
     if (action === 'ADD_ITEM') {
-      console.log(value.activeId)
-      const id = value.activeId
-      const prevChildren = data[value.activeId].children
-      const label = data[value.activeId].label
-      const item = {
-        label: value.labelInput,
-        value: value.valueInput,
-        id: uuid(),
-        timestamp: new Date().toISOString(),
-      }
-      const children = [...prevChildren, item]
-
-      const body = {
-        id,
-        label,
-        children,
-      }
-
-      try {
-        const response = await axios.put(`/fitness/update/${parentId}`, body)
-        setData(response.data.payload)
-      } catch (error) {
-        setError(error)
-      }
+      console.log({ value })
+      // value: {labelInput: '', valueInput: '', activeId: ''}
+      addItem({
+        payload: {
+          labelInput: value.labelInput,
+          valueInput: value.valueInput,
+          activeId: value.activeId,
+        },
+      })
     }
     if (action === 'OPEN_CATEGORY') {
       setEnableMenu(true)

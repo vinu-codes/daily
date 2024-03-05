@@ -63,7 +63,7 @@ const RendererItems = ({ items, callback, parentId }) => {
             className="delete"
             onClick={() =>
               callback({
-                action: 'update',
+                action: 'DELETE_ITEM',
                 value: { parentId, childId: item.id },
               })
             }
@@ -95,7 +95,9 @@ const RendererParent = ({ items, callback, parentId }) => {
               <Icon name="CLOSE" />
             </ParentAddButton>
             <ParentDeleteButton
-              onClick={() => callback({ action: 'DELETE', value: item.id })}
+              onClick={() =>
+                callback({ action: 'DELETE_CATEGORY', value: item.id })
+              }
             >
               <Icon name="TRASH" />
             </ParentDeleteButton>
@@ -131,36 +133,45 @@ const NoteBuilder = ({ label }) => {
     fetchData()
   }, [])
 
-  const handleCallback = async ({ action, value }) => {
-    if (action === 'DELETE') {
-      console.log({ delete: value })
-      try {
-        const response = await axios.delete(`/fitness/delete/${value}`)
-        setData(response.data.payload)
-      } catch (error) {
-        setError(error)
-      }
+  const deleteCategory = async ({ payload }) => {
+    try {
+      const response = await axios.delete(`/fitness/delete/${payload}`)
+      setData(response.data.payload)
+    } catch (error) {
+      setError(error)
     }
-    if (action === 'update') {
-      const result = data[value.parentId].children.filter((item) => {
-        return item.id !== value.childId
-      })
+  }
 
-      console.log({ result })
-      const payload = {
-        id: parentId,
-        label: data[value.parentId].label,
-        children: result,
-      }
-      try {
-        const response = await axios.put(
-          `/fitness/update/${value.parentId}`,
-          payload
-        )
-        setData(response.data.payload)
-      } catch (error) {
-        setError(error)
-      }
+  const deleteItem = async ({ payload }) => {
+    const result = data[payload.parentId].children.filter((item) => {
+      return item.id !== payload.childId
+    })
+
+    const body = {
+      id: payload.parentId,
+      label: data[payload.parentId].label,
+      children: result,
+    }
+
+    try {
+      const response = await axios.put(
+        `/fitness/update/${payload.parentId}`,
+        body
+      )
+      setData(response.data.payload)
+    } catch (error) {
+      setError(error)
+    }
+  }
+
+  const handleCallback = async ({ action, value }) => {
+    if (action === 'DELETE_CATEGORY') {
+      deleteCategory({ payload: value })
+    }
+    if (action === 'DELETE_ITEM') {
+      deleteItem({
+        payload: { parentId: value.parentId, childId: value.childId },
+      })
     }
     if (action === 'ADD_CATEGORY') {
       const body = { label: value, children: [] }
@@ -192,7 +203,6 @@ const NoteBuilder = ({ label }) => {
 
       try {
         const response = await axios.put(`/fitness/update/${parentId}`, body)
-        console.log(response.data, 'update response')
         setData(response.data.payload)
       } catch (error) {
         setError(error)
@@ -206,7 +216,6 @@ const NoteBuilder = ({ label }) => {
       setEnableMenu(true)
       setActiveMenuId('ITEM')
       setParentId(value)
-      console.log({ parentId })
     }
     if (action === 'CLOSE') {
       setEnableMenu(false)

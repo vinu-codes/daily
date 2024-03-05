@@ -13,6 +13,7 @@ import {
 } from './NoteBuilder.styled'
 import { CategoryBuilderForm } from './CategoryBuilderForm'
 import { ItemBuilderForm } from './ItemBuilderForm'
+import { Search } from './Search'
 import axios from 'axios'
 import { uuid } from '@utils/uuid'
 
@@ -251,6 +252,7 @@ const NoteBuilder = ({ label }) => {
             <Icon name="CLOSE" />
           </button>
         </ContainerHeader>
+        <Search callback={handleCallback} />
         <RendererParent
           items={!!data ? Object.values(data) : []}
           callback={handleCallback}

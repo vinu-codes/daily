@@ -3,6 +3,7 @@ import axios from 'axios'
 import { createRoot } from 'react-dom/client'
 import { NoteBuilder } from '@components/NoteBuilder'
 import { NavBar } from '@components/NavBar'
+import { Footer } from '@components/Footer'
 
 import './styles.css'
 
@@ -33,5 +34,6 @@ root.render(
   <>
     <NavBar />
     <NoteBuilder label={'Git Commands'} />
+    <Footer />
   </>
 )

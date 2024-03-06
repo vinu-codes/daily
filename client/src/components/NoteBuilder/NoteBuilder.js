@@ -252,7 +252,7 @@ const NoteBuilder = ({ label }) => {
             <Icon name="CLOSE" />
           </button>
         </ContainerHeader>
-        <Search callback={handleCallback} />
+        <Search callback={handleCallback} data={data} />
         <RendererParent
           items={!!data ? Object.values(data) : []}
           callback={handleCallback}

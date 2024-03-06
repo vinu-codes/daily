@@ -1,1 +1,18 @@
-{"924783":{"id":924783,"label":"Git Basics","children":[{"id":"abc-2","label":"Add a new branch","value":"git branch <branch-name>"},{"id":"abc-3","label":"Delete a branch","value":"git branch -d <branch-name>"}]}}
+{
+  "924783": {
+    "id": 924783,
+    "label": "Git Basics",
+    "children": [
+      {
+        "id": "abc-2",
+        "label": "Add a new branch",
+        "value": "git branch <branch-name>"
+      },
+      {
+        "id": "abc-3",
+        "label": "Delete a branch",
+        "value": "git branch -d <branch-name>"
+      }
+    ]
+  }
+}

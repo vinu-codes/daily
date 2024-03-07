@@ -1,39 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 20px;
-  button {
-    padding: 10px 20px;
-    background-color: #4d90fe;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    &:hover {
-      background-color: #357ae8;
-    }
-  }
-`
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
-  font-size: 16px;
-  line-height: 21px;
-  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  &:focus {
-    border-color: #4d90fe;
-  }
-`
+import { Container, Input } from './Search.styled'
 
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value)
@@ -49,24 +15,9 @@ const useDebounce = (value, delay) => {
   return debouncedValue
 }
 
-const getFilterData = (data, str) => {
-  if (!str) return data
-
-  const trimmedStr = str.trim()
-
-  const isolatedWords = trimmedStr.split(' ')
-
-  const reduceWords = isolatedWords.filter(() => {})
-
-  console.log(isolatedWords)
-
-  return {}
-}
-
 const Search = ({ callback, data }) => {
   const [value, setValue] = useState()
   const debouncedValue = useDebounce(value, 500)
-  const result = getFilterData(data, ' the dog ran ')
 
   const handleChange = (e) => {
     setValue(e.target.value)

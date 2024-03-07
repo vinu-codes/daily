@@ -49,20 +49,24 @@ const useDebounce = (value, delay) => {
   return debouncedValue
 }
 
-const filterData = (data, debouncedValue) => {
-  if (!debouncedValue) return data
-  const items = Object.values(data)
+const getFilterData = (data, str) => {
+  if (!str) return data
 
-  console.log({ items })
+  const trimmedStr = str.trim()
 
-  return items.children.filter((item) => {
-    return item.label.toLowerCase().includes(debouncedValue.toLowerCase())
-  })
+  const isolatedWords = trimmedStr.split(' ')
+
+  const reduceWords = isolatedWords.filter(() => {})
+
+  console.log(isolatedWords)
+
+  return {}
 }
 
 const Search = ({ callback, data }) => {
   const [value, setValue] = useState()
   const debouncedValue = useDebounce(value, 500)
+  const result = getFilterData(data, ' the dog ran ')
 
   const handleChange = (e) => {
     setValue(e.target.value)
@@ -74,12 +78,18 @@ const Search = ({ callback, data }) => {
 
     const payload = (!!debouncedValue && debouncedValue.trim()) || ''
 
-    // const result = filterData(data, payload)
-
     // console.log(result)
 
     callback({ action: 'UPDATE', payload: '' })
   }
+
+  // we cannot use .includes() as it will not work with multiple words
+  // so we have to use .split() to split the string into an array
+  // const STR = 'the dog ran'
+
+  // const result = STR.includes('ran dog')
+
+  // console.log(result)
 
   useEffect(() => {
     if (!debouncedValue) return

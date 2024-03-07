@@ -8,8 +8,18 @@
         "alias": {
           "@common": "./src/common",
           "@features": "./src/features",
-          "@utils": "./src/utils"
+          "@hooks": "./src/hooks",
+          "@pages": "./src/pages",
+          "@state": "./src/state",
+          "@utils": "./src/utils",
+          "@test": "./src/test"
         }
+      }
+    ],
+    [
+      "babel-plugin-styled-components",
+      {
+        "displayName": true
       }
     ]
   ],

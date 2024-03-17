@@ -4,6 +4,7 @@ import { Container, Input } from './Search.styled'
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value)
 
+  // we are getting the value and delay from the input so we can delay when to show the results
   useEffect(() => {
     setTimeout(() => {
       setDebouncedValue(value)
@@ -19,33 +20,18 @@ const Search = ({ callback, data }) => {
   const [value, setValue] = useState()
   const debouncedValue = useDebounce(value, 500)
 
-  const handleChange = (e) => {
-    setValue(e.target.value)
-  }
-
-  const translateSearch = (debouncedValue) => {
-    // check if debounced value is true, and if it is, trim it so that it removes any
-    // whitespace from the beginning and end of the string
-
-    const payload = (!!debouncedValue && debouncedValue.trim()) || ''
-
-    // console.log(result)
-
-    callback({ action: 'UPDATE', payload: '' })
-  }
-
-  // we cannot use .includes() as it will not work with multiple words
-  // so we have to use .split() to split the string into an array
-  // const STR = 'the dog ran'
-
-  // const result = STR.includes('ran dog')
-
-  // console.log(result)
-
   useEffect(() => {
     if (!debouncedValue) return
     translateSearch(debouncedValue)
   }, [debouncedValue])
+
+  const translateSearch = (debouncedValue) => {
+    // callback({ payload })
+  }
+
+  const handleChange = (e) => {
+    setValue(e.target.value)
+  }
 
   return (
     <Container>

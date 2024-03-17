@@ -1,40 +1,3 @@
-const getStrings = (str) => {
-  const splitStr = str.split(' ')
-  const trimStr = splitStr.map((item) => item.trim())
-  const isolatedWords = trimStr.filter((item) => item !== '')
-  return isolatedWords
-}
-
-const getResults = (data, words) => {
-  const result = Object.values(data).reduce((prev, curr) => {
-    const { children } = curr
-    const updatedChildren = children.filter((child) => {
-      const isThere = words.includes(child.label) // true
-      return isThere
-    })
-
-    const result = {
-      [curr.id]: {
-        id: curr.id,
-        label: curr.label,
-        children: updatedChildren,
-      },
-    }
-
-    return { ...prev, ...result }
-  }, {})
-
-  return result
-}
-
-// Function
-const getSearchables = (data, str) => {
-  const isolatedWords = getStrings(str)
-  const result = getResults(data, isolatedWords)
-  return result
-}
-
-// TEST
 const defaultData = {
   '01': {
     id: '01',
@@ -48,94 +11,265 @@ const defaultData = {
     id: '02',
     label: 'Category b',
     children: [
-      { id: 'c', label: 'cat' },
-      { id: 'd', label: 'elephant' },
+      { id: 'b', label: 'dog' },
+      { id: 'd', label: 'kangaroo' },
     ],
   },
 }
-
-const defaultDataEmptyChildren = {
+const defaultDataWithSpaces = {
   '01': {
     id: '01',
     label: 'Category a',
-    children: [],
+    children: [
+      { id: 'b', label: 'the dog' },
+      { id: 'd', label: 'kangaroo' },
+    ],
   },
   '02': {
     id: '02',
     label: 'Category b',
-    children: [],
+    children: [
+      { id: 'b', label: 'dog' },
+      { id: 'd', label: 'kangaroo' },
+    ],
+  },
+}
+const newData = {
+  '01': {
+    id: '01',
+    label: 'Git commands',
+    children: [
+      { id: 'b', label: 'the dog' },
+      { id: 'd', label: 'kangaroo' },
+    ],
+  },
+  '02': {
+    id: '02',
+    label: 'Cooking notes',
+    children: [
+      { id: 'b', label: 'dog' },
+      { id: 'd', label: 'kangaroo' },
+    ],
   },
 }
 
-describe('getSearchables', () => {
-  it('should return the data as we expect', () => {
-    const data = { ...defaultData }
-    const str = 'dog kangaroo'
-    const result = getSearchables(data, str)
-    expect(result).toEqual({
-      '01': {
+// we cannot use includes on if the label includes the searchString because it has to be the exact match
+
+const getStrings = (str) => {
+  const splitStr = str.split(' ')
+  const trimStr = splitStr.map((x) => x.trim())
+  // remove the items that have empty strings
+  const isolatedWords = trimStr
+    .filter((item) => item !== '')
+    .map((x) => x.toLowerCase())
+  return isolatedWords
+}
+
+// returns true or false
+const includesPartial = (searchWord, list) =>
+  list.some((item) => item.includes(searchWord))
+
+// function that receives search value and returns a function
+// that function checks to see if the the search word is included in the list of items
+const getIncludedResults = (searchWord) => (listWords) => {
+  if (!searchWord || !listWords.length) return false
+
+  return includesPartial(searchWord, listWords)
+}
+
+const getResults =
+  (options = []) =>
+  (words = []) => {
+    let maxCount = 0
+
+    const scoredGroups = options.reduce((prev, curr) => {
+      const filteredOutput = words.filter((word) =>
+        getIncludedResults(word)(getStrings(curr.label))
+      )
+
+      const count = filteredOutput.length
+
+      const result = {
+        ...curr,
+        count,
+      }
+
+      if (count > 0) {
+        maxCount = Math.max(maxCount, count)
+        return [...prev, result]
+      }
+
+      return prev
+    }, [])
+
+    const filteredResults = scoredGroups.filter(
+      (result) => result.count === maxCount
+    )
+
+    return filteredResults
+  }
+
+describe('getResults', () => {
+  it('should return an empty array', () => {
+    const options = []
+    const words = []
+    const result = getResults(options)(words)
+    expect(result).toEqual([])
+  })
+  it('should return one object in the array with the label of git commands and count: 1', () => {
+    const options = [
+      {
         id: '01',
-        label: 'Category a',
-        children: [
-          { id: 'b', label: 'dog' },
-          { id: 'd', label: 'kangaroo' },
-        ],
-      },
-      '02': {
-        id: '02',
-        label: 'Category b',
+        label: 'Git commands',
         children: [],
       },
-    })
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+      },
+    ]
+    const words = ['git']
+    const result = getResults(options)(words)
+    const equalValue = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+        count: 1,
+      },
+    ]
+    expect(result).toEqual(equalValue)
+  })
+  it('should return an array with the labels that match the searchWords with the count variable showing how many times it matched', () => {
+    const options = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+      },
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+      },
+    ]
+    const words = ['git', 'comm']
+    const result = getResults(options)(words)
+    const equalValue = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+        count: 2,
+      },
+    ]
+    expect(result).toEqual(equalValue)
+  })
+  it('should return an array with the labels that match the searchWords ordered in most matched to least matched', () => {
+    const options = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+      },
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+      },
+    ]
+    const words = ['git', 'comm', 'notes']
+    const result = getResults(options)(words)
+    const equalValue = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+        count: 2,
+      },
+    ]
+    expect(result).toEqual(equalValue)
   })
   describe('getStrings', () => {
-    it('should return an array of strings and trim [remove prefix white space and suffix white spaces]', () => {
-      const str = ' the dog ran '
-      const result = getStrings(str)
-      expect(result).toEqual(['the', 'dog', 'ran'])
+    it('should return an array of strings', () => {
+      const payload = 'hello world'
+      const result = ['hello', 'world']
+      expect(getStrings(payload)).toEqual(result)
     })
-    it('should return an array of strings and any additonal spaces in the search string provided will be removed', () => {
-      const str = 'the   dog ran'
-      const result = getStrings(str)
-      expect(result).toEqual(['the', 'dog', 'ran'])
+    it('should return an array of strings with no empty strings as an item in the array', () => {
+      const payload = 'hello world '
+      const result = ['hello', 'world']
+      expect(getStrings(payload)).toEqual(result)
+    })
+    it('should return an array of strings with no empty strings as an item in the array', () => {
+      const payload = 'hello world  it is me '
+      const result = ['hello', 'world', 'it', 'is', 'me']
+      expect(getStrings(payload)).toEqual(result)
     })
   })
-  describe('getResults', () => {
-    it('should return an empty object literal no matter what happens', () => {
-      const data = { ...defaultDataEmptyChildren }
-      const words = ['the', 'dog', 'ran']
-      const result = getResults(data, words)
-      expect(result).toEqual({
-        '01': {
-          id: '01',
-          label: 'Category a',
-          children: [],
-        },
-        '02': {
-          id: '02',
-          label: 'Category b',
-          children: [],
-        },
-      })
+  describe('getIncludedResults', () => {
+    it('should return a function that checks if the search word is partially a substring of each item of the list', () => {
+      const search = 'an'
+      const words = ['apple', 'banana', 'cherry']
+
+      // returns a fn called includedResults()
+      const includedResults = getIncludedResults(search)
+      expect(typeof includedResults).toBe('function')
+
+      const result1 = includedResults(words)
+      expect(result1).toBe(true)
+
+      const result2 = includedResults([])
+      expect(result2).toBe(false)
+
+      const result3 = includedResults(['grapes'])
+      expect(result3).toBe(false)
     })
-    it(`should return an object literal with each item having a children key's value filtered as a result of words provided as the second argument`, () => {
-      const data = { ...defaultData }
-      const words = ['dog', 'kangaroo']
-      const result = getResults(data, words)
-      expect(result).toEqual({
-        '01': {
-          id: '01',
-          label: 'Category a',
-          children: [
-            { id: 'b', label: 'dog' },
-            { id: 'd', label: 'kangaroo' },
-          ],
-        },
-        '02': {
-          id: '02',
-          label: 'Category b',
-          children: [],
-        },
+    it('should return false if search word is empty', () => {
+      const search = ''
+      const list = ['apple', 'banana', 'cherry']
+      const includedResults = getIncludedResults(search)
+      const result = includedResults(list)
+      expect(result).toBe(false)
+    })
+    it('should return false if search word and list is empty', () => {
+      const search = ''
+      const list = []
+      const includedResults = getIncludedResults(search)
+      const result = includedResults(list)
+      expect(result).toBe(false)
+    })
+    describe('includesPartial', () => {
+      it('should return true if any item (string) in the list includes the word partially', () => {
+        const list = ['apple', 'banana', 'cherry']
+        const searchWord = 'an'
+        expect(includesPartial(searchWord, list)).toBe(true)
+      })
+      it('should return false if no item (string) in the list includes the searchWord partially', () => {
+        const list = ['apple', 'banana', 'cherry']
+        const searchWord = 'grape'
+        expect(includesPartial(searchWord, list)).toBe(false)
+      })
+      it('should return true if the searchWord is an empty string', () => {
+        const list = ['apple', 'banana', 'cherry']
+        const searchWord = ''
+        expect(includesPartial(searchWord, list)).toBe(true)
+      })
+      it('should return false if the list is empty', () => {
+        const list = []
+        const searchWord = 'banana'
+        expect(includesPartial(searchWord, list)).toBe(false)
+      })
+      it('should return false if both the list and searchWord are empty', () => {
+        const list = []
+        const searchWord = ''
+        expect(includesPartial(searchWord, list)).toBe(false)
+      })
+      it('should return true if the searchWord is included in the array', () => {
+        const list = ['the', 'dog']
+        const searchWord = ['dog']
+        expect(includesPartial(searchWord, list)).toBe(true)
       })
     })
   })

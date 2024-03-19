@@ -81,7 +81,6 @@ const RendererParent = ({ items, callback, parentId }) => {
   if (!items || items.length === 0) return null
 
   return items.map((item, index) => {
-    console.log(item)
     return (
       <Group
         key={index}
@@ -203,6 +202,10 @@ const NoteBuilder = ({ label }) => {
   }
 
   const handleCallback = async ({ action, value }) => {
+    if (action === 'SET_SEARCH') {
+      console.log({ value })
+      setData(value)
+    }
     if (action === 'DELETE_CATEGORY') {
       deleteCategory({ payload: value })
     }

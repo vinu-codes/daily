@@ -53,8 +53,6 @@ const newData = {
   },
 }
 
-// we cannot use includes on if the label includes the searchString because it has to be the exact match
-
 const getStrings = (str) => {
   const splitStr = str.split(' ')
   const trimStr = splitStr.map((x) => x.trim())
@@ -65,16 +63,20 @@ const getStrings = (str) => {
   return isolatedWords
 }
 
-// returns true or false
 const includesPartial = (searchWord, list) =>
   list.some((item) => item.includes(searchWord))
 
-// function that receives search value and returns a function
-// that function checks to see if the the search word is included in the list of items
 const getIncludedResults = (searchWord) => (listWords) => {
   if (!searchWord || !listWords.length) return false
 
   return includesPartial(searchWord, listWords)
+}
+
+const filterOutputs = (words, options) => {
+  const result = words.filter((word) => {
+    getIncludedResults(word)(getStrings(options.label))
+  })
+  return result
 }
 
 const getResults =
@@ -189,6 +191,55 @@ describe('getResults', () => {
         count: 2,
       },
     ]
+    expect(result).toEqual(equalValue)
+  })
+  it('should return an array with the labels that match the searchWords ordered in most matched to least matched', () => {
+    const options = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+      },
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+      },
+    ]
+    const words = ['git', 'comm', 'notes', 'coo']
+    const result = getResults(options)(words)
+    const equalValue = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+        count: 2,
+      },
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+        count: 2,
+      },
+    ]
+    expect(result).toEqual(equalValue)
+  })
+  it('should return an empty array', () => {
+    const options = [
+      {
+        id: '01',
+        label: 'Git commands',
+        children: [],
+      },
+      {
+        id: '02',
+        label: 'Cooking notes',
+        children: [],
+      },
+    ]
+    const words = ['dog']
+    const result = getResults(options)(words)
+    const equalValue = []
     expect(result).toEqual(equalValue)
   })
   describe('getStrings', () => {
